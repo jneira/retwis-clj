@@ -1,15 +1,17 @@
 (ns retwis-clj.app
-  (:require [clojure.core.cache :as cache]
-            [compojure.core :refer [defroutes routes]]
+  (:require [compojure.core :refer [defroutes routes]]
             [compojure.handler :as handler]
             [compojure.route :as route]
             [stencil.loader :as stencil]
+            [taoensso.carmine :as car]
             [clojure.core.cache :as cache]
             [retwis-clj.middleware.session :as session-manager]
             [retwis-clj.middleware.context :as context-manager]))
 
 ;; Initialization
-; Add required code here (database, etc.)
+;; Add required code here (database, etc.)
+
+
 (stencil/set-cache (cache/ttl-cache-factory {}))
 ;(stencil/set-cache (cache/lru-cache-factory {}))
 
