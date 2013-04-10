@@ -1,5 +1,5 @@
 (ns retwis-clj.model.db
-  (:refer-clojure :exclude [cons])
+  (:refer-clojure :exclude [cons set get])
   (:require [taoensso.carmine :as redis]
             [retwis-clj.model.db-config :as cfg]))
 
@@ -13,15 +13,18 @@
 (defmacro wcar [& body]
   `(redis/with-conn pool spec-server1 ~@body))
 
-(defn key [ent & segs]
-  (apply str ent
-         (map #(if (keyword? %) % (keyword (str %))) segs)))
+(defn get-type [ent]
+  (.getSimpleName (class ent)))
+
+(defn key [root & subs]
+  (apply str root
+         (map #(if (keyword? %) % (keyword (str %))) subs)))
+
+(defn key-with-id [{id :id :as ent}]
+  (partial key (get-type ent) :id id))
 
 (defn exists? [key]
   (redis/as-bool (wcar (redis/exists key))))
-
-(defn get-type [ent]
-  (.getSimpleName (class ent)))
 
 (defn get
   ([key] (wcar (redis/get key)))
@@ -29,12 +32,34 @@
      (wcar (doseq [k (conj keys key)]
              (redis/get k)))))
 
+(defn read
+  ([type id ks]
+     (let [dbks (map #(key type :id id %) ks)
+           vals (apply get dbks)
+           vals (if (coll? vals) vals [vals])]
+       (zipmap ks vals)))
+  ([{id :id :as ent}]
+     (let [ks (remove #{:id} (keys ent))]
+       (merge ent (read (get-type ent) id ks)))))
+
 (defn set
-  ([key val] (wcar (redis/set key val)))
-  ([key val & kvs]
-     (wcar (doseq [[k v] (conj (partition 2 kvs)
-                               [key val])]
+  ([[k v]] (wcar (redis/set k v)))
+  ([[key val] & kvs]
+     (wcar (doseq [[k v] (conj kvs [key val])]
              (redis/set k v)))))
+
+(defn writable? [ent k v]
+  (and ((comp not nil?) v) (not= :id k)))
+
+(defn write [ent]
+  (let [db-key (key-with-id ent)
+        kvs (for [[k v] ent :when (writable? ent k v)]
+              [(db-key k) v])]
+    (apply set kvs)))
+
+(defn create [ent]
+  (let [with-gen-id #(assoc ent :id (new-uid ent))]
+   (write (if (:id ent) ent (with-gen-id)))))
 
 (defn new-uid [ent]
   (wcar (redis/incr (str ent :uid))))

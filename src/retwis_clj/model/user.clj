@@ -3,7 +3,7 @@
   (:require [retwis-clj.model.db :as db]
             digest))
 
-(def key-user (partial db/key 'user))
+(def key-user (partial db/key 'User))
 (def key (partial key-user :id))
 
 (defn- new-salt
