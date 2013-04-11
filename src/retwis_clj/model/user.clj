@@ -1,10 +1,11 @@
 (ns retwis-clj.model.user
+  (:refer-clojure exclude [key])
   (:use retwis-clj.model.entities)
   (:require [retwis-clj.model.db :as db]
             digest))
 
-(def key-user (partial db/key 'User))
-(def key (partial key-user :id))
+(def key (partial db/key 'User))
+(def key-id (partial key :id))
 
 (defn- new-salt
   ([] (new-salt 5))
@@ -13,69 +14,68 @@
 (defn- hash-pw [salt pw]
   (digest/md5 (str salt pw)))
 
-(defn find-by-id [id]
-  (let [name (key id :username)]
-    (when (db/exists? name)
-      (map->User {:id id}))))
+(def find-by-id
+  (partial db/find-by-id id->User))
 
-(defn find-by-username [name]
-  (when-let [id (db/get (key-user :username  name))]
-    (id->User id)))
+(def find-by-username
+  (partial db/find-by-index id->User :username))
 
 (defn create [name password]
-  (let [id (db/new-uid 'user) salt (new-salt)
-        pwd (hash-pw salt password)]
-    (apply db/set [(key id :username) name
-                   (key-user :username name) id
-                   (key id :salt) salt
-                   (key id :hashed-password) pwd])
-    (db/cons id (db/key 'users))
-    (->User id name pwd salt)))
+  (let [salt (new-salt) pwd (hash-pw salt password)
+        user (db/create (->User nil name pwd salt))]
+    (db/add-to-index user :username) user))
 
 (defn tweets
   ([type user] (tweets type user 1))
-  ([type {:keys [id]} page]
+  ([type {id :id} page]
      (let [from (* (dec page) 10) to (* page 10)]
-       (map #(map->Post {:id %})
-            (db/sublist (key id type) from to)))))
-
-(defn add-follower [{idx :id} {idy :id}]
-  (db/add (key idx :followers) idy))
-
-(defn remove-follower [{idx :id} {idy :id}]
-  (db/remove (key idx :followers) idy))
-
-(defn follow [{idx :id} {idy :id}]
-  (when (not= idx idy)
-    (db/add (key idx :followees) idy)
-    (add-follower idy idx)))
-
-(defn unfollow [{idx :id} {idy :id}]
-  (db/remove (key idx :followees) idy)
-  (remove-follower idy idx))
-
-(defn following? [{idx :id} {idy :id}]
-  (db/member? (key idx :followees) idy))
-
-(defn followers [{id :id}]
-  (map id->User
-       (db/members (key id :followers))))
-
-(defn followees [{id :id}]
-  (map id->User
-       (db/members (key id :followees))))
+       (map #(db/read (id->Post %))
+            (db/sublist (key-id id type) from to)))))
 
 (def posts (partial tweets :posts))
 (def timeline (partial tweets :timeline))
 (def mentions (partial tweets :mentions))
 
-(defn add-tweet [lists {id :id} {post-id :id}]
+(defn add-follower [{idx :id}
+                    {idy :id :as follower}]
+  (db/add (key-id idx :followers) idy)
+   follower)
+
+(defn remove-follower [{idx :id}
+                       {idy :id :as follower}]
+  (db/remove (key-id idx :followers) idy)
+   follower)
+
+(defn follow [{idx :id :as follower}
+              {idy :id :as following}]
+  (when (not= idx idy)
+    (db/add (key-id idx :followees) idy)
+    (add-follower following follower)))
+
+(defn unfollow [{idx :id :as follower}
+                {idy :id :as following}]
+  (db/remove (key-id idx :followees) idy)
+  (remove-follower following follower))
+
+(defn following? [{idx :id :as follower}
+                  {idy :id}]
+  (db/member? (key-id idx :followees) idy))
+
+(defn followers [{id :id}]
+  (map #(find-by-id % [:username])
+       (db/members (key-id id :followers))))
+
+(defn followees [{id :id}]
+  (map #(find-by-id % [:username])
+       (db/members (key-id id :followees))))
+
+(defn add-tweet [lists {id :id} {post-id :id :as post}]
   (doseq [lst lists]
-    (db/cons post-id (key id lst))))
+    (db/cons post-id (key-id id lst)) post))
 
 (def add-to-timeline (partial add-tweet [:timeline]))
 (def add-mention (partial add-tweet [:mentions]))
 
 (defn add-post [user post]
   (add-tweet [:posts :timeline] user post)
-  (doseq [f (followers user)] (add-to-timeline f post)))
+  (doall (for [f (followers user)] (add-to-timeline f post))))

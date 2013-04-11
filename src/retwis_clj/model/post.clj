@@ -1,8 +1,13 @@
 (ns retwis-clj.model.post
+  (:refer-clojure exclude [key])
   (:use retwis-clj.model.entities)
-  (:require [retwis-clj.model.user :as user]))
+  (:require [retwis-clj.model.user :as user]
+            [retwis-clj.model.db :as db]))
 
-(def key (partial db/key 'post))
+(def key (partial db/key 'Post))
+
+(defn find-by-id
+  (partial db/find-by-id id->Post))
 
 (defn add-mentions [{c :content :as post}]
   (doseq [r (re-seq #"@\w+" c)
@@ -12,15 +17,8 @@
     (user/add-mention user post)))
 
 (defn create [user-id content]
-  (let [id (db/new-uid 'post)
-        now (System/currentTimeMillis)
-        post (->Post id content user-id now)]
-    (apply db/set [(key id :content) content
-                   (key :user_id) user-id
-                   (key id :created-at) now])
-    (db/cons id (db/key 'timeline))
+  (let [now (System/currentTimeMillis)
+        post (db/create
+              (->Post nil content user-id now))]
     (user/add-post {:id user-id} post)
-    (add-mentions post)))
-
-
-
+    (add-mentions post) post))

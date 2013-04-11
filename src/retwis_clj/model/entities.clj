@@ -6,3 +6,4 @@
 
 (defrecord Post [id content user-id created-at])
 
+(defn id->Post [id] (map->Post {:id id}))
