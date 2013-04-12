@@ -28,7 +28,17 @@
   (session/logout)
   (response/redirect (wrap-context-root "/")))
 
+(defn- signup-page [request]
+  (wrap-layout "Log in"
+               (login-page-body request)))
+
+(defn- signup [request]
+  (init-test-data)
+  (response/redirect (wrap-context-root "/")))
+
 (defroutes auth-routes
   (GET "/login" request (login-page request))
   (POST "/login" request (login request))
-  (GET "/logout" request (logout request)))
+  (GET "/logout" request (logout request))
+  (GET "/signup" request (signup-page request))
+  (POST "/signup" request (signup request)))
