@@ -8,6 +8,7 @@
                  [compojure "1.1.5"]
                  [stencil "0.3.2"]
                  [com.taoensso/carmine "1.6.0"]
+                 [com.taoensso/tower "1.5.1"]
                  [digest "1.3.0"]]
   :plugins [[lein-ring "0.8.3"]]
   :ring {:handler retwis-clj.app/site-handler}

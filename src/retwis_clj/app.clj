@@ -3,15 +3,16 @@
             [compojure.handler :as handler]
             [compojure.route :as route]
             [stencil.loader :as stencil]
-            [taoensso.carmine :as car]
             [clojure.core.cache :as cache]
             [retwis-clj.middleware.session :as session-manager]
-            [retwis-clj.middleware.context :as context-manager]))
+            [retwis-clj.middleware.context :as context-manager]
+            [taoensso.tower.ring :as i18n-manager]
+            [taoensso.tower :as i18n]))
 
 ;; Initialization
 ;; Add required code here (database, etc.)
 
-
+(i18n/load-dictionary-from-map-resource! "i18n.clj")
 (stencil/set-cache (cache/ttl-cache-factory {}))
 ;(stencil/set-cache (cache/lru-cache-factory {}))
 
@@ -39,4 +40,5 @@
               (route/not-found "<h1>Page not found.</h1>"))
       (session-manager/wrap-session)
       (context-manager/wrap-context-root)
+      (i18n-manager/wrap-i18n-middleware)
       (handler/site)))
