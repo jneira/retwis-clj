@@ -1,5 +1,5 @@
 (ns retwis-clj.model.db
-  (:refer-clojure :exclude [cons get type read]
+  (:refer-clojure :exclude [key cons get type read]
                   :rename {set core-set remove core-remove})
   (:require [taoensso.carmine :as redis]
             [retwis-clj.model.db-config :as cfg]))
