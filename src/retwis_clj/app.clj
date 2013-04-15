@@ -1,5 +1,6 @@
 (ns retwis-clj.app
-  (:require [compojure.core :refer [defroutes routes]]
+  (:require ring.middleware.params
+            [compojure.core :refer [defroutes routes]]
             [compojure.handler :as handler]
             [compojure.route :as route]
             [stencil.loader :as stencil]
@@ -28,7 +29,6 @@
 (require '[retwis-clj.view.profile :refer [profile-routes]]
          '[retwis-clj.view.admin :refer [admin-routes]])
 
-
 ;; Ring handler definition
 (defroutes site-handler
   (-> (routes home-routes
@@ -38,6 +38,7 @@
               admin-routes
               (route/resources "/")
               (route/not-found "<h1>Page not found.</h1>"))
+      (ring.middleware.params/wrap-params)
       (session-manager/wrap-session)
       (context-manager/wrap-context-root)
       (i18n-manager/wrap-i18n-middleware)
