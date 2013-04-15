@@ -21,9 +21,12 @@
   (partial db/find-by-index id->User :username))
 
 (defn test-password [username password]
-  (let [{:keys [hashed-password salt]}
+  (let [{:keys [hashed-password salt] :as user}
         (find-by-username username [:salt :hashed-password])]
-    (= hashed-password (hash-pw salt password))))
+    (if user
+      (if (= hashed-password (hash-pw salt password))
+        ::correct-password ::incorrect-password)
+      ::not-found)))
 
 (defn create [name password]
   (let [salt (new-salt) pwd (hash-pw salt password)
