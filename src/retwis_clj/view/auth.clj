@@ -3,7 +3,8 @@
             [compojure.core :refer [defroutes GET POST]]
             [stencil.core :as stencil]
             [retwis-clj.util.session :as session]
-            [retwis-clj.view.common :refer [wrap-context-root get-context-root wrap-layout]]))
+            [retwis-clj.view.common :refer
+             [wrap-context-root get-context-root wrap-layout]]))
 
 (defn init-test-data
   "Initialise session with dummy data"
