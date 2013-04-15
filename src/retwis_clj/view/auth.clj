@@ -4,7 +4,8 @@
             [stencil.core :as stencil]
             [retwis-clj.util.session :as session]
             [retwis-clj.view.common :refer
-             [wrap-context-root get-context-root wrap-layout]]))
+             [wrap-context-root get-context-root wrap-layout]]
+            [taoensso.tower :as i18n]))
 
 (defn init-test-data
   "Initialise session with dummy data"
@@ -15,7 +16,10 @@
 (defn- login-page-body [request]
   (stencil/render-file
    "retwis_clj/view/templates/auth"
-   {:context-root (get-context-root)}))
+   {:context-root (get-context-root)
+    :title (i18n/t :auth/title)
+    :username (i18n/t :auth/username)
+    :password (i18n/t :auth/password)}))
 
 (defn- login-page [request]
   (wrap-layout "Log in"
