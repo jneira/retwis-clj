@@ -5,7 +5,8 @@
             [retwis-clj.util.session :as session]
             [retwis-clj.view.common :refer
              [wrap-context-root get-context-root wrap-layout]]
-            [taoensso.tower :as i18n]))
+            [taoensso.tower :as i18n]
+            [retwis-clj.model.user :a user]))
 
 (defn init-test-data
   "Initialise session with dummy data"
@@ -19,7 +20,11 @@
    {:context-root (get-context-root)
     :title (i18n/t :auth/title)
     :username (i18n/t :auth/username)
-    :password (i18n/t :auth/password)}))
+    :password (i18n/t :auth/password)
+    :remember-me (i18n/t :auth/remember-me)
+    :submit-log-in (i18n/t :auth/submit-log-in)
+    :link-register (i18n/t :auth/link-register)
+    :link-recover-password (i18n/t :auth/link-recover-password)}))
 
 (defn- login-page [request]
   (wrap-layout "Log in"
@@ -27,6 +32,7 @@
 
 (defn- login [request]
   (init-test-data)
+
   (response/redirect (wrap-context-root "/")))
 
 (defn- logout [request]
