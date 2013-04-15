@@ -1,6 +1,6 @@
 (ns retwis-clj.model.db
-  (:refer-clojure :exclude [cons get type]
-                  :rename {set core-set})
+  (:refer-clojure :exclude [cons get type read]
+                  :rename {set core-set remove core-remove})
   (:require [taoensso.carmine :as redis]
             [retwis-clj.model.db-config :as cfg]))
 
@@ -24,6 +24,24 @@
 (defn exists? [key]
   (redis/as-bool (wcar (redis/exists key))))
 
+(defn member? [set-key val]
+  (redis/as-bool (wcar (redis/sismember set-key val))))
+
+(defn cons [val lst-key]
+  (wcar (redis/lpush lst-key val)))
+
+(defn sublist [lst-key from to]
+  (wcar (redis/lrange lst-key from to)))
+
+(defn add [set-key val]
+  (wcar (redis/sadd set-key val)))
+
+(defn remove [set-key val]
+  (wcar (redis/srem set-key val)))
+
+(defn members [set-key]
+  (wcar (redis/smembers set-key)))
+
 (defn get
   ([key] (wcar (redis/get key)))
   ([key & keys]
@@ -37,7 +55,7 @@
            vals (if (coll? vals) vals [vals])]
        (zipmap ks vals)))
   ([{id :id :as ent} ks-select]
-     (when ent (let [ks (remove #{:id} ks-select)]
+     (when ent (let [ks (core-remove #{:id} ks-select)]
                  (merge ent (read (type ent) id ks)))))
   ([ent] (read ent (keys ent))))
 
@@ -57,18 +75,18 @@
   ([id->ent index i]
      (find-by-index id->ent index i [])))
 
+(defn set
+  ([[k v]] (wcar (redis/set k v)))
+  ([[key val] & kvs]
+     (wcar (doseq [[k v] (conj kvs [key val])]
+             (redis/set k v)))))
+
 (defn add-to-index
   ([root index i id]
      (set [(key root index i) id]))
   ([ent index]
      (add-to-index (type ent) index
                    (index ent) (:id ent))))
-
-(defn set
-  ([[k v]] (wcar (redis/set k v)))
-  ([[key val] & kvs]
-     (wcar (doseq [[k v] (conj kvs [key val])]
-             (redis/set k v)))))
 
 (defn writable? [[k v]]
   (and ((comp not nil?) v) (not= :id k)))
@@ -89,21 +107,3 @@
         ent-id (assoc ent :id id)]
     (add (key (type ent) :ids) id)
     (write ent-id)))
-
-(defn cons [val lst-key]
-  (wcar (redis/lpush lst-key val)))
-
-(defn sublist [lst-key from to]
-  (wcar (redis/lrange lst-key from to)))
-
-(defn add [set-key val]
-  (wcar (redis/sadd set-key val)))
-
-(defn remove [set-key val]
-  (wcar (redis/srem set-key val)))
-
-(defn member? [set-key val]
-  (redis/as-bool (wcar (redis/sismember set-key val))))
-
-(defn members [set-key]
-  (wcar (redis/smembers set-key)))
