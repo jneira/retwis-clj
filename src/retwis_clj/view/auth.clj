@@ -1,4 +1,5 @@
 (ns retwis-clj.view.auth
+  (:use validateur.validation)
   (:require [ring.util.response :as response]
             [compojure.core :refer [defroutes GET POST]]
             [stencil.core :as stencil]
@@ -7,6 +8,7 @@
              [wrap-context-root get-context-root wrap-layout]]
             [taoensso.tower :as i18n]
             [retwis-clj.model.user :as user]))
+
 
 (defn init-test-data
   "Initialise session with dummy data"
@@ -17,18 +19,24 @@
 (defn- login-page-body [request]
   (stencil/render-file
    "retwis_clj/view/templates/auth"
-   {:context-root (get-context-root)
-    :title (i18n/t :auth/title)
-    :username (i18n/t :auth/username)
-    :password (i18n/t :auth/password)
-    :remember-me (i18n/t :auth/remember-me)
-    :submit-log-in (i18n/t :auth/submit-log-in)
-    :link-register (i18n/t :auth/link-register)
-    :link-recover-password (i18n/t :auth/link-recover-password)}))
+   (merge
+    {:context-root (get-context-root)}
+    (let [keys [:title :username :password :remember-me
+                 :submit-log-in :link-register
+                 :link-recover-password]
+          vals (i18n/with-scope :auth (vec (map i18n/t keys)))]
+         (zipmap keys vals)))))
 
 (defn- login-page [request]
   (wrap-layout "Log in"
                (login-page-body request)))
+
+(def validate-user
+  (apply validation-set
+   (length-of :username :within (range 3 8))
+   (length-of :password :within (range 8 100))
+   (map #(format-of :password :format %)
+        [#"\d+" #"\D+" #"[A-Za-z]+"])))
 
 (defn- login [request]
   (init-test-data)

@@ -1,6 +1,7 @@
 (ns retwis-clj.view.common
   (:require [ring.util.response :as response]
             [stencil.core :as stencil]
+            [taoensso.tower :as i18n]
             [retwis-clj.middleware.context :as context]
             [retwis-clj.util.session :as session]))
 
@@ -13,6 +14,13 @@
   "Add web context to the path of URI"
   [path]
   (str (get-context-root) path))
+
+;;; i18n utils
+
+(defn translate
+  ([keys] (map i18n/t keys))
+  ([scope keys] (with-scope scope (vec (map i18n/t keys)))))
+
 
 ;;; User utils
 (defn restricted
