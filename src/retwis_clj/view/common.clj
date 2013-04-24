@@ -18,8 +18,8 @@
 ;;; i18n utils
 
 (defn translate
-  ([keys] (map i18n/t keys))
-  ([scope keys] (with-scope scope (vec (map i18n/t keys)))))
+  ([keys] (zipmap keys (map i18n/t keys)))
+  ([scope keys] (i18n/with-scope scope (translate keys))))
 
 
 ;;; User utils

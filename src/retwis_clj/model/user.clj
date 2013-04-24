@@ -1,6 +1,7 @@
 (ns retwis-clj.model.user
   (:refer-clojure exclude [key])
-  (:use retwis-clj.model.entities)
+  (:use retwis-clj.model.entities
+        validateur.validation)
   (:require [retwis-clj.model.db :as db]
             digest))
 
@@ -20,13 +21,21 @@
 (def find-by-username
   (partial db/find-by-index id->User :username))
 
-(defn test-password [username password]
+(defn validate-login [username password]
   (let [{:keys [hashed-password salt] :as user}
         (find-by-username username [:salt :hashed-password])]
     (if user
       (if (= hashed-password (hash-pw salt password))
         ::correct-password ::incorrect-password)
-      ::not-found)))
+      ::user-not-found)))
+
+(def validate
+  (apply validation-set
+   (length-of :username :within (range 3 257))
+   (length-of :password :within (range 8 257))
+   (map #(format-of :password :format %)
+        [#"\d+" #"\D+" #"[A-Za-z]+"])))
+
 
 (defn create [name password]
   (let [salt (new-salt) pwd (hash-pw salt password)
