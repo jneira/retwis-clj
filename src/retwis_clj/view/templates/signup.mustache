@@ -1,6 +1,6 @@
 <div class="form-horizontal login-form">
-  <h2>{{login-title}}</h2>
-  <form method="post" action="{{context-root}}/login">
+  <h2>{{signup-title}}</h2>
+  <form method="post" action="{{context-root}}/signup">
     <div class="control-group">
       <input type="text" name="username" placeholder="{{username}}" 
              class="input-block-level" />
@@ -9,21 +9,14 @@
       <input type="password" name="password" placeholder="{{password}}" 
              class="input-block-level" />
     </div>
-    <div class="control-group">
-      <label class="checkbox">
-	<input type="checkbox" value="remember-me">
-	{{remember-me}}
-	</input>
-      </label>
+     <div class="control-group">
+      <input type="password" name="password-check" 
+             placeholder="{{password-check}}" 
+             class="input-block-level" />
     </div>
     <div class="control-group">
-      <input type="submit" value="{{login-submit}}" 
+      <input type="submit" value="{{signup-submit}}" 
              class="btn btn-inverse btn-large pull-right">
-    </div>
-    <div class="links">
-      <span><a href="/signup" >{{signup-link}}</a> - 
-            <a href="">{{recover-password-link}}</a>
-      </span>
     </div>
   </form>
 </div>

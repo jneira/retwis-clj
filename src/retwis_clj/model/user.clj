@@ -21,6 +21,8 @@
 (def find-by-username
   (partial db/find-by-index id->User :username))
 
+(def exists? (comp boolean find-by-username))
+
 (defn validate-login [username password]
   (let [{:keys [hashed-password salt] :as user}
         (find-by-username username [:salt :hashed-password])]
@@ -29,13 +31,20 @@
         ::correct-password ::incorrect-password)
       ::user-not-found)))
 
-(def validate
-  (apply validation-set
+(defn constraints [{check :password-check :as user}]
+  (list*
    (length-of :username :within (range 3 257))
    (length-of :password :within (range 8 257))
+   (inclusion-of :password :in (set [check]))
    (map #(format-of :password :format %)
         [#"\d+" #"\D+" #"[A-Za-z]+"])))
 
+(defn validate [user]
+  ((apply validation-set (constraints user)) user))
+
+(defn validate-new [user]
+  (if (exists? user) [false {:username "already in use"}]
+      (validate user)))
 
 (defn create [name password]
   (let [salt (new-salt) pwd (hash-pw salt password)

@@ -14,33 +14,45 @@
    "retwis_clj/view/templates/auth"
    (merge
     {:context-root (get-context-root)}
-    (translate :auth [:title :username :password :remember-me
-                      :submit-log-in :link-register
-                      :link-recover-password]))))
+    (translate :auth [:login-title :username :password :remember-me
+                      :login-submit :signup-link
+                      :recover-password-link]))))
 
 (defn- login-page [request]
   (wrap-layout "Log in"
                (login-page-body request)))
 
 (defn- login [request]
-  (let [{:keys [username password]} (:params request)
+  (let [{:keys [username password] :as user} (:params request)
         res (user/validate-login username password)]
-    (println res)
-    (session/set-user! {:login username :type :admin}))
-  (response/redirect (wrap-context-root "/")))
+    (if (= res :user/correct-password)
+      (do (session/set-user! user)
+          (response/redirect (wrap-context-root "/")))
+      (login-page request))))
 
 (defn- logout [request]
   (session/logout)
   (response/redirect (wrap-context-root "/")))
 
-(defn- signup-page [request]
-  (wrap-layout "Log in"
-               (login-page-body request)))
+(defn- signup-page-body [request]
+  (stencil/render-file
+   "retwis_clj/view/templates/signup"
+   (merge
+    {:context-root (get-context-root)}
+    (translate :auth [:signup-title :username :password
+                      :password-check  :signup-submit]))))
 
-(defn- signup [request]
-  (init-test-data)
-  (println request)
-  (response/redirect (wrap-context-root "/")))
+(defn- signup-page [request]
+  (wrap-layout "Sign up"
+               (signup-page-body request)))
+
+(defn- signup [{user :params :as request}]
+  (let [[valid? msgs] (user/validate-new user)]
+    (if valid?
+      (do (session/set-user!
+           (select-keys (user/create user) [:username]))
+          (response/redirect (wrap-context-root "/")))
+      (signup-page request))))
 
 (defroutes auth-routes
   (GET "/login" request (login-page request))

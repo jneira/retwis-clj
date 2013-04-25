@@ -2,14 +2,11 @@
   (:require [retwis-clj.middleware.session :as session-manager]))
 
 (defn set-user! [user]
-  (session-manager/session-put! :user user))
+  (session-manager/session-put!
+   :user (select-keys user [:username :type])))
 
-(defn current-user
-  "Retrieve current user"
-  []
+(defn current-user "Retrieve current user" []
   (session-manager/session-get :user))
 
-(defn logout
-  "Reset session"
-  []
+(defn logout "Reset session" []
   (session-manager/session-clear))
