@@ -3,7 +3,8 @@
             [stencil.core :as stencil]
             [taoensso.tower :as i18n]
             [retwis-clj.middleware.context :as context]
-            [retwis-clj.util.session :as session]))
+            [retwis-clj.util.session :as session]
+            [retwis-clj.util.flash :as flash]))
 
 ;;; Context utils
 (defn get-context-root
@@ -46,7 +47,8 @@
 (defn- base-content [title body]
   {:context-root (context/get-context-root)
    :title title
-   :body body})
+   :body body
+   :messages (merge (session/))})
 
 (defn- user-nav-links [user]
   (when (admin?) 

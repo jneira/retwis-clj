@@ -52,7 +52,9 @@
       (do (session/set-user!
            (select-keys (user/create user) [:username]))
           (response/redirect (wrap-context-root "/")))
-      (signup-page request))))
+      (do
+        
+        (signup-page request)))))
 
 (defroutes auth-routes
   (GET "/login" request (login-page request))
