@@ -1,13 +1,20 @@
-(ns messages
-  (:require [retwis-clj.middleware.session :as session-manager]
-            [retwis-clj.util.flash :as flash])
+(ns retwis-clj.util.messages
+  (:refer-clojure :exclude [empty get set])
+  (:require [retwis-clj.util.flash :as flash]))
 
-(def empty-messages)
+(def empty {:error [] :info []})
 
-(def get-messages
-  ([] (get :messages))
-  ([type] (when-let [msgs (get-messages)] (type mgs))))
+(defn get
+  ([] (flash/get :messages))
+  ([type] (type (get))))
 
-(def add-message [type msg]
-  (let [msgs (or (get-messages) {:error [] :info []})]
-    (put! :messages (update-in msgs [type] conj msg))))
+(defn set
+  ([msgs] (flash/put! :messages msgs))
+  ([type msgs]
+     (let [all (or (get) empty)]
+       (set (assoc all type msgs)))))    
+
+(defn add [type msg]
+  (let [msgs (or (get) empty)]
+    (set (update-in msgs [type] conj msg))))
+

@@ -4,7 +4,7 @@
             [taoensso.tower :as i18n]
             [retwis-clj.middleware.context :as context]
             [retwis-clj.util.session :as session]
-            [retwis-clj.util.flash :as flash]))
+            [retwis-clj.util.messages :as messages]))
 
 ;;; Context utils
 (defn get-context-root
@@ -26,7 +26,8 @@
 ;;; User utils
 (defn restricted
   "Function for restricted part of the Web site. 
-   Takes a predicate function and the handler to execute if predicate is true."
+   Takes a predicate function and the handler
+   to execute if predicate is true."
   [predicate handler & args]
   (if (predicate)
     (apply handler args)
@@ -44,11 +45,12 @@
     (= :admin (:type user))))
 
 ;;; Layout
-(defn- base-content [title body]
-  {:context-root (context/get-context-root)
-   :title title
-   :body body
-   :messages (merge (session/))})
+(defn- base-content
+  ([title body]
+     {:context-root (context/get-context-root)
+      :title title :body body})
+  ([title body msgs]
+     (assoc (base-content title body) :messages msgs)))
 
 (defn- user-nav-links [user]
   (when (admin?) 
@@ -57,14 +59,16 @@
 
 (defn wrap-layout
   "Define pages layout"
-  [title body]
-  (stencil/render-file
-   "retwis_clj/view/templates/layout"
-   (let [content (base-content title body)
-         user (session/current-user)]
-     (if (authenticated?)
-       (assoc content 
-         :authenticated? 
-         {:user (:username user)
-          :nav-links (user-nav-links user)})
-       (assoc content :not-authenticated? {})))))
+  ([title body msgs]
+     (stencil/render-file
+      "retwis_clj/view/templates/layout"
+      (let [msgs (merge-with into (messages/get) msgs)
+            content (base-content title body msgs)
+            user (session/current-user)]
+        (if (authenticated?)
+          (assoc content 
+            :authenticated? 
+            {:user (:username user)
+              :nav-links (user-nav-links user)})
+          (assoc content :not-authenticated? {})))))
+  ([title body] (wrap-layout title body [])))

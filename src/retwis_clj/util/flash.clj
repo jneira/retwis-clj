@@ -7,7 +7,12 @@
   [k v]
   (session-manager/flash-put! k v))
 
+(defn get!
+  "Retrieve a flash value and remove the key"
+  [k]
+  (session-manager/flash-get k))
+
 (defn get
   "Retrieve a flash value"
   [k]
-  (session-manager/flash-get k))
+  (@session-manager/*flash* k))

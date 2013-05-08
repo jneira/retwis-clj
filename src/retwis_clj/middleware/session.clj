@@ -1,7 +1,7 @@
 (ns retwis-clj.middleware.session)
 
-(declare ^:dynamic *session*)
-(declare ^:dynamic *flash*)
+(def ^:dynamic *session* (atom {}))
+(def ^:dynamic *flash* (atom {}))
 
 (defn wrap-session
   "Store session into a Clojure map"
