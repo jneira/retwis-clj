@@ -43,7 +43,7 @@
   ((apply validation-set (constraints user)) user))
 
 (defn validate-new [user]
-  (if (exists? user) [false {:username "already in use"}]
+  (if (exists? user) {:username "already in use"}
       (validate user)))
 
 (defn create [name password]

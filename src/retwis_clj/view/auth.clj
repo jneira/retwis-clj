@@ -44,17 +44,18 @@
 
 (defn- signup-page [request]
   (wrap-layout "Sign up"
-               (signup-page-body request)))
+               (signup-page-body request)
+               (:messages request)))
 
 (defn- signup [{user :params :as request}]
-  (let [[valid? msgs] (user/validate-new user)]
-    (if valid?
+  (let [msgs (user/validate-new user)]
+    (if (empty? msgs)
       (do (session/set-user!
            (select-keys (user/create user) [:username]))
           (response/redirect (wrap-context-root "/")))
-      (do
-        
-        (signup-page request)))))
+      (-> request
+          (assoc :messages {:error (vals msgs)})
+          (signup-page)))))
 
 (defroutes auth-routes
   (GET "/login" request (login-page request))

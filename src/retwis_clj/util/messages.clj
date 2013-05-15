@@ -5,16 +5,18 @@
 (def empty {:error [] :info []})
 
 (defn get
-  ([] (flash/get :messages))
+  ([] (or (flash/get :messages) empty))
   ([type] (type (get))))
+
+(defn get!
+  ([] (or (flash/get! :messages) empty))
+  ([type] (type (get!))))
 
 (defn set
   ([msgs] (flash/put! :messages msgs))
   ([type msgs]
-     (let [all (or (get) empty)]
-       (set (assoc all type msgs)))))    
+     (set (assoc (get) type msgs))))    
 
 (defn add [type msg]
-  (let [msgs (or (get) empty)]
-    (set (update-in msgs [type] conj msg))))
+  (set (update-in (get) [type] conj msg)))
 
