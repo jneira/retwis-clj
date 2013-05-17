@@ -58,7 +58,6 @@
         (signup-page))
     (let [new-user (user/create user)]
       (session/set-user! new-user)
-      (messages/add :info "Welcome")
       (response/redirect (wrap-context-root "/")))))
 
 (defroutes auth-routes
