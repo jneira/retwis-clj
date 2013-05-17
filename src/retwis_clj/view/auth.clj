@@ -6,29 +6,33 @@
             [retwis-clj.util.session :as session]
             [retwis-clj.view.common :refer
              [wrap-context-root get-context-root wrap-layout translate]]
+            [retwis-clj.util.messages :as messages]
             [retwis-clj.model.user :as user]))
 
+(def labels [:username-label :password-label
+                :password-check-label])
 
 (defn- login-page-body [request]
   (stencil/render-file
    "retwis_clj/view/templates/auth"
    (merge
     {:context-root (get-context-root)}
-    (translate :auth [:login-title :username :password :remember-me
-                      :login-submit :signup-link
-                      :recover-password-link]))))
+    (:params request)
+    (translate :auth (into labels [:remember-me :login-submit
+                                   :signup-link :recover-password-link])))))
 
 (defn- login-page [request]
   (wrap-layout "Log in"
-               (login-page-body request)))
+               (login-page-body request)
+               (:messages request)))
 
 (defn- login [request]
   (let [{:keys [username password] :as user} (:params request)
         res (user/validate-login username password)]
-    (if (= res :user/correct-password)
+    (if (= res ::user/correct-password)
       (do (session/set-user! user)
           (response/redirect (wrap-context-root "/")))
-      (login-page request))))
+      (login-page (assoc request :messages {:error [{:content res}]})))))
 
 (defn- logout [request]
   (session/logout)
@@ -39,8 +43,8 @@
    "retwis_clj/view/templates/signup"
    (merge
     {:context-root (get-context-root)}
-    (translate :auth [:signup-title :username :password
-                      :password-check  :signup-submit]))))
+    (:params request)
+    (translate :auth (into labels [:signup-title :signup-submit])))))
 
 (defn- signup-page [request]
   (wrap-layout "Sign up"
@@ -48,14 +52,14 @@
                (:messages request)))
 
 (defn- signup [{user :params :as request}]
-  (let [msgs (user/validate-new user)]
-    (if (empty? msgs)
-      (do (session/set-user!
-           (select-keys (user/create user) [:username]))
-          (response/redirect (wrap-context-root "/")))
-      (-> request
-          (assoc :messages {:error (vals msgs)})
-          (signup-page)))))
+  (if-let [errors (seq (user/validate-new user))]
+    (-> request
+        (assoc :messages (messages/from-validation errors))
+        (signup-page))
+    (let [new-user (user/create user)]
+      (session/set-user! new-user)
+      (messages/add :info "Welcome")
+      (response/redirect (wrap-context-root "/")))))
 
 (defroutes auth-routes
   (GET "/login" request (login-page request))

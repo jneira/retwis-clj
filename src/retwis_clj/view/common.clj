@@ -65,7 +65,6 @@
       (let [msgs (merge-with into (messages/get!) msgs)
             content (base-content title body msgs)
             user (session/current-user)]
-        (println "Content" content)
         (if (authenticated?)
           (assoc content 
             :authenticated? 

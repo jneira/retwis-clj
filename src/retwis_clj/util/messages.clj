@@ -20,3 +20,8 @@
 (defn add [type msg]
   (set (update-in (get) [type] conj msg)))
 
+(defn from-validation [fields-with-msgs]
+  {:error
+   (flatten (for [[field msgs] fields-with-msgs]
+              (for [msg msgs]
+                {:content (str (name field) " " msg)})))})

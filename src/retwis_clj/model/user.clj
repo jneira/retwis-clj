@@ -46,10 +46,13 @@
   (if (exists? user) {:username "already in use"}
       (validate user)))
 
-(defn create [name password]
-  (let [salt (new-salt) pwd (hash-pw salt password)
-        user (db/create (->User nil name pwd salt))]
-    (db/add-to-index user :username) user))
+(defn create
+  ([{:keys [username password]}]
+     (create username password))
+  ([name password]
+     (let [salt (new-salt) pwd (hash-pw salt password)
+           user (db/create (->User nil name pwd salt))]
+       (db/add-to-index user :username) user)))
 
 (defn tweets
   ([type user] (tweets type user 1))

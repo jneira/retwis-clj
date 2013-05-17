@@ -2,11 +2,13 @@
   <h2>{{login-title}}</h2>
   <form method="post" action="{{context-root}}/login">
     <div class="control-group">
-      <input type="text" name="username" placeholder="{{username}}" 
+      <input type="text" name="username" value="{{username}}" 
+             placeholder="{{username-label}}" 
              class="input-block-level" />
     </div>
     <div class="control-group">
-      <input type="password" name="password" placeholder="{{password}}" 
+      <input type="password" name="password" value="{{password}}" 
+             placeholder="{{password-label}}" 
              class="input-block-level" />
     </div>
     <div class="control-group">
