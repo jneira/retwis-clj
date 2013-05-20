@@ -16,7 +16,7 @@
 	    <span class="icon-bar"></span>
 	    <span class="icon-bar"></span>
 	  </a>
-	  <a class="brand">Name</a>
+	  <a class="brand">{{app-name}}</a>
 	  <div class="nav-collapse collapse">
 	    <ol class="nav">
 	      <li><a href="{{context-root}}/">Home</a></li>
@@ -25,7 +25,6 @@
 	      <li><a href="{{link}}">{{label}}</a></li>
 	      {{/nav-links}}
 	      {{/authenticated?}}
-	      <li><a href="{{context-root}}/about">About</a></li>
 	    </ol>
 	    {{#not-authenticated?}}
 	    <a class="btn btn-inverse pull-right" href="{{context-root}}/login">Log in</a>

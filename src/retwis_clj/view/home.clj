@@ -3,14 +3,21 @@
             [stencil.core :as stencil]
             [retwis-clj.view.common :as common]))
 
-(defn- page-body []
+(defn- user-page-body []
   (stencil/render-file
    "retwis_clj/view/templates/home"
    {}))
 
+(defn- guess-page-body []
+  (stencil/render-file
+   "retwis_clj/view/templates/guess"
+   {}))
+
 (defn- render-page [request]
   (common/wrap-layout "Home"
-                      (page-body)))
+   (if (common/authenticated?)
+     (user-page-body)
+     (guess-page-body))))
 
 (defroutes home-routes
   (GET "/" request (render-page request)))

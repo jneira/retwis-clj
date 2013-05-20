@@ -32,7 +32,6 @@
 ;; Ring handler definition
 (defroutes site-handler
   (-> (routes home-routes
-              about-routes
               auth-routes
               profile-routes
               admin-routes
