@@ -31,13 +31,13 @@
         ::correct-password ::incorrect-password)
       ::user-not-found)))
 
-(defn constraints [{check :password-check :as user}]
+(defn constraints [{pw :password :as user}]
   (list*
    (length-of :username :within (range 3 257))
    (length-of :password :within (range 8 257))
-   (inclusion-of :password :in (set [check]))
+   (inclusion-of :password-check :in (set [pw]))
    (map #(format-of :password :format %)
-        [#"\d+" #"\D+" #"[A-Za-z]+"])))
+        [#"\d+" #"\W+" #"[A-Za-z]+"])))
 
 (defn validate [user]
   ((apply validation-set (constraints user)) user))
@@ -100,6 +100,7 @@
 
 (defn add-tweet [lists {id :id} {post-id :id :as post}]
   (doseq [lst lists]
+    (println "info"(key-id id lst) post-id)
     (db/cons post-id (key-id id lst)) post))
 
 (def add-to-timeline (partial add-tweet [:timeline]))

@@ -1,4 +1,4 @@
 (ns retwis-clj.model.db-config)
 
-(def redis [])
+(def redis {})
 

@@ -4,15 +4,10 @@
   (:require [taoensso.carmine :as redis]
             [retwis-clj.model.db-config :as cfg]))
 
-(def pool (redis/make-conn-pool)) 
-
-(def spec-server1
-  (if cfg/redis
-    (apply redis/make-conn-spec cfg/redis)
-    (redis/make-conn-spec)))
+(def server1-conn {:pool {} :spec (or cfg/redis {})})
 
 (defmacro wcar [& body]
-  `(redis/with-conn pool spec-server1 ~@body))
+  `(redis/wcar server1-conn ~@body))
 
 (defn type [ent]
   (.getSimpleName (class ent)))
