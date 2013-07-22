@@ -11,7 +11,7 @@
   (partial db/find-by-id id->Post))
 
 (defn add-mentions [{c :content :as post}]
-  (doseq [r (re-seq #"@\w+" c)
+  (doseq [r (re-seq #"@\w+" (or c ""))
           :let [name (.substring r 1)
                 user (user/find-by-username name)]
           :when user]
@@ -23,9 +23,9 @@
 (defn validate [post]
   ((apply validation-set (constraints post)) post))
 
-(defn create [user-id content]
+(defn create [user content]
   (let [now (System/currentTimeMillis)
         post (db/create
-              (->Post nil content user-id now))]
-    (user/add-post {:id user-id} post)
+              (->Post nil content (:id user) now))]
+    (user/add-post user post)
     (add-mentions post) post))

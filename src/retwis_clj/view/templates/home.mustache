@@ -1,4 +1,21 @@
+<p> Timeline </p>
+<ul class="timeline">
+{{#timeline}}
+  <li>{{content}} </li>
+{{/timeline}}
+{{^timeline}}
+  <li>No tweets, post some of them</li>
+{{/timeline}}
+</ul>
 <form action="post" name="post" method="post">
-  <textarea name="content" rows="3" cols="60"></textarea>
+  <textarea name="content" rows="3" style="width:30em"></textarea>
   <input type="submit" value="send"/>
 </form>
+<p> Mentions </p>
+<ul class="mentions">
+{{#mentions}}
+  <li>{{content}} </li>
+{{/mentions}}
+{{^mentions}}
+  <li>No mentions</li>
+{{/mentions}}

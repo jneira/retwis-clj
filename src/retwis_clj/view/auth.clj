@@ -30,7 +30,7 @@
   (let [{:keys [username password] :as user} (:params request)
         res (user/validate-login username password)]
     (if (= res ::user/correct-password)
-      (do (session/set-user! user)
+      (do (session/set-user! (user/find-by-username username [:username]))
           (response/redirect (wrap-context-root "/")))
       (login-page (assoc request :messages {:error [{:content res}]})))))
 

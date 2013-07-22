@@ -1,15 +1,19 @@
 (ns retwis-clj.view.home
-  (:require [compojure.core :refer [defroutes GET POST]]
+  (:use retwis-clj.view.common)
+  (:require [ring.util.response :as response]
+            [compojure.core :refer [defroutes GET POST]]
             [stencil.core :as stencil]
-            [retwis-clj.view.common :as common]
             [retwis-clj.model.post :as post]
+            [retwis-clj.model.user :as user]
             [retwis-clj.util.session :as session]
             [retwis-clj.util.messages :as messages]))
 
 (defn- user-page-body []
-  (stencil/render-file
-   "retwis_clj/view/templates/home"
-   {}))
+  (let [user (session/current-user)]
+    (stencil/render-file
+     "retwis_clj/view/templates/home"
+     {:timeline (user/timeline user)
+      :mentions (user/mentions user)})))
 
 (defn- guess-page-body []
   (stencil/render-file
@@ -17,19 +21,20 @@
    {}))
 
 (defn- render-page [request]
-  (common/wrap-layout "Home"
-    (if (common/authenticated?)
-      (user-page-body)
-      (guess-page-body))))
+  (println "msgs" (:messages request))
+  (wrap-layout "Home"
+    (if (authenticated?) (user-page-body)
+        (guess-page-body))
+    (:messages request)))
 
 (defn- post [{post :params :as request}]
   (if-let [errors (seq (post/validate post))]
-    (assoc request :messages
-           (messages/from-validation errors))
+    (do (-> request
+            (assoc :messages (messages/from-validation errors))
+            (render-page)))
     (let [user (session/current-user)]
-      (println "Usuario" user)
-      (post/create (:contents post) (:username user))))
-  (render-page request))
+      (post/create user (:content post))
+      (response/redirect (wrap-context-root "/")))))
 
 (defroutes home-routes
   (GET "/" request (render-page request))

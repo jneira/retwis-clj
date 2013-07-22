@@ -43,8 +43,9 @@
   ((apply validation-set (constraints user)) user))
 
 (defn validate-new [user]
-  (if (exists? user) {:username "already in use"}
-      (validate user)))
+  (if (exists? (:username user))
+    {:username #{"already in use"}}
+    (validate user)))
 
 (defn create
   ([{:keys [username password]}]
@@ -57,7 +58,7 @@
 (defn tweets
   ([type user] (tweets type user 1))
   ([type {id :id} page]
-     (let [from (* (dec page) 10) to (* page 10)]
+     (let [from (* (dec page) 10) to (dec (* page 10))]
        (map #(db/read (id->Post %))
             (db/sublist (key-id id type) from to)))))
 
@@ -98,10 +99,10 @@
   (map #(find-by-id % [:username])
        (db/members (key-id id :followees))))
 
-(defn add-tweet [lists {id :id} {post-id :id :as post}]
+(defn add-tweet [lists {user-id :id} {post-id :id :as post}]
   (doseq [lst lists]
-    (println "info"(key-id id lst) post-id)
-    (db/cons post-id (key-id id lst)) post))
+    (db/cons post-id (key-id user-id lst)))
+  post)
 
 (def add-to-timeline (partial add-tweet [:timeline]))
 (def add-mention (partial add-tweet [:mentions]))
