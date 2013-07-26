@@ -21,9 +21,8 @@
    {}))
 
 (defn- render-page [request]
-  (println "msgs" (:messages request))
   (wrap-layout "Home"
-    (if (authenticated?) (user-page-body)
+   (if (authenticated?) (user-page-body)
         (guess-page-body))
     (:messages request)))
 
