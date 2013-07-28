@@ -100,5 +100,6 @@
 (defn create [ent]
   (let [id (or (:id ent) (new-uid (type ent)))
         ent-id (assoc ent :id id)]
+    (println ent-id)
     (add (key (type ent) :ids) id)
     (write ent-id)))

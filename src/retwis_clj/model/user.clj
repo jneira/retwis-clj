@@ -59,7 +59,9 @@
   ([type user] (tweets type user 1))
   ([type {id :id} page]
      (let [from (* (dec page) 10) to (dec (* page 10))]
-       (map #(db/read (id->Post %))
+       (map #(let [t (db/read (id->Post %))
+                   u (find-by-id (:user-id t) [:username])]
+               (assoc t :user u))
             (db/sublist (key-id id type) from to)))))
 
 (def posts (partial tweets :posts))

@@ -1,7 +1,12 @@
 <p> Timeline </p>
 <ul class="timeline">
 {{#timeline}}
-  <li>{{content}} </li>
+{{#user}}    
+  <li><a href="{{root}}/user/{{username}}">
+    {{username}}
+  </a>:{{content}}
+  </li>
+{{/user}}
 {{/timeline}}
 {{^timeline}}
   <li>No tweets, post some of them</li>

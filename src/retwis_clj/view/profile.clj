@@ -1,5 +1,5 @@
 (ns retwis-clj.view.profile
-  (:require [compojure.core :refer [defroutes GET]]
+  (:require [compojure.core :refer [defroutes GET PUT]]
             [stencil.core :as stencil]
             [retwis-clj.util.session :as session]
             [retwis-clj.view.common :refer
@@ -30,8 +30,12 @@
 (defn- connect-page [request]
   (wrap-layout "Connect" (connect-body)))
 
+(defn- follow [request])
 
 (defroutes profile-routes
   (GET "/user/:username" request
        (profile-page request))
-  (GET "/connect" request (connect-page request)))
+  (GET "/connect" request
+       (connect-page request))
+  (PUT "/user/:self-user/followee/:user-to-follow" request
+       (follow request)))
