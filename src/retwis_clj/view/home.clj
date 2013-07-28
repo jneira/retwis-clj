@@ -12,8 +12,7 @@
   (let [user (session/current-user)]
     (stencil/render-file
      "retwis_clj/view/templates/home"
-     {:timeline (user/timeline user)
-      :mentions (user/mentions user)})))
+     {:timeline (user/timeline user)})))
 
 (defn- guess-page-body []
   (stencil/render-file

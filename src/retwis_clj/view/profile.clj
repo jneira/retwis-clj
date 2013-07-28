@@ -1,17 +1,37 @@
 (ns retwis-clj.view.profile
   (:require [compojure.core :refer [defroutes GET]]
             [stencil.core :as stencil]
+            [retwis-clj.util.session :as session]
             [retwis-clj.view.common :refer
-             [restricted authenticated? wrap-layout]]))
+             [restricted authenticated? wrap-layout]]
+            [retwis-clj.model.user :as user]))
 
-(defn- page-body []
+(defn- profile-body [{{name :username} :params}]
   (stencil/render-file
    "retwis_clj/view/templates/profile"
-   {}))
+   (let [current (session/current-user)
+         user (user/find-by-username name)]
+     {:posts (user/posts user)
+      :followers (user/followers user)
+      :followees (user/followees user)
+      :self (= name (:username current))
+      :other name
+      :current current})))
 
-(defn- render-page [request]
-  (wrap-layout "Profile" (page-body)))
+(defn- connect-body []
+  (stencil/render-file
+   "retwis_clj/view/templates/connect"
+   (let [current (session/current-user)]
+     {:mentions (user/mentions current)})))
+
+(defn- profile-page [request]
+  (wrap-layout "Profile" (profile-body request)))
+
+(defn- connect-page [request]
+  (wrap-layout "Connect" (connect-body)))
+
 
 (defroutes profile-routes
   (GET "/user/:username" request
-       (restricted authenticated? render-page request)))
+       (profile-page request))
+  (GET "/connect" request (connect-page request)))

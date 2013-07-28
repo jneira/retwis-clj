@@ -52,10 +52,9 @@
   ([title body msgs]
      (assoc (base-content title body) :messages msgs)))
 
-(defn- user-nav-links [user]
-  (when (admin?) 
-    [{:link (wrap-context-root "/admin") :label "Administration"}
-     {:link (wrap-context-root "/") :label "Foo"}]))
+(defn- user-nav-links [{un :username}]
+  [{:link (wrap-context-root (str "/user/" un)) :label "Me"}
+   {:link (wrap-context-root "/connect") :label "Connect"}])
 
 (defn wrap-layout
   "Define pages layout"

@@ -1,3 +1,36 @@
-<div>
-  <h1>Profile</h1>
-</div>
+{{^self}}
+<h3>{{other}}</h3>
+{{#current}}
+  <form action="{{context-root}}/user/{{username}}/followee/{{other}}"
+   type="PUT" >
+   <input type="submit" value="follow" />
+  </form>
+{{/current}}
+{{/self}}
+<p>Posts</p>
+<ul class="posts">
+{{#posts}}
+  <li>{{content}} </li>
+{{/posts}}
+{{^posts}}
+  <li>No tweets yet.</li>
+{{/posts}}
+</ul>
+<p>Followers</p>
+<ul class="users followers">
+{{#followers}}
+  <li>{{username}} </li>
+{{/followers}}
+{{^followers}}
+  <li>No followers yet.</li>
+{{/followers}}
+</ul>
+<p>Followees</p>
+<ul class="users followees">
+{{#followees}}
+  <li>{{username}} </li>
+{{/followees}}
+{{^followees}}
+  <li>No followees yet.</li>
+{{/followees}}
+</ul>
