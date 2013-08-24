@@ -2,8 +2,10 @@
   (:require [compojure.core :refer [defroutes GET PUT]]
             [stencil.core :as stencil]
             [retwis-clj.util.session :as session]
+            [retwis-clj.util.messages :as msgs]
             [retwis-clj.view.common :refer
-             [restricted authenticated? wrap-layout]]
+             [restricted authenticated? wrap-layout
+              translate translate-error]]
             [retwis-clj.model.user :as user]))
 
 (defn- profile-body [{{name :username} :params}]
@@ -25,17 +27,29 @@
      {:mentions (user/mentions current)})))
 
 (defn- profile-page [request]
-  (wrap-layout "Profile" (profile-body request)))
+  (wrap-layout "Profile" (profile-body request)
+               (:messages request)))
 
 (defn- connect-page [request]
-  (wrap-layout "Connect" (connect-body)))
+  (wrap-layout "Connect" (connect-body)
+               (:messages request)))
 
-(defn- follow [request])
+(defn- follow [{{:keys [username followee]} :params :as req}]
+  (let [curr (session/current-user)
+        [follower fwee] (map #(user/find-by-username % [:username])
+                             [username followee])
+        res (user/validate-follow curr follower fwee)]
+    (println res)
+    (if (= res ::user/valid-follow)
+      (do (user/follow follower fwee)
+          (profile-page req))
+      (let [msgs (msgs/single :error (translate-error res))]
+        (profile-page (assoc req :messages msgs))))))
 
 (defroutes profile-routes
+  (GET "/user/:username/followee/:followee" request
+       (follow request))
   (GET "/user/:username" request
        (profile-page request))
   (GET "/connect" request
-       (connect-page request))
-  (PUT "/user/:self-user/followee/:user-to-follow" request
-       (follow request)))
+       (connect-page request)))

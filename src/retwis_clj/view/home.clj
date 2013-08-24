@@ -18,12 +18,14 @@
 (defn- guess-page-body []
   (stencil/render-file
    "retwis_clj/view/templates/guess"
-   {}))
+   {:root (get-context-root)
+    :timeline (post/all)}}))
 
 (defn- render-page [request]
   (wrap-layout "Home"
-   (if (authenticated?) (user-page-body)
-        (guess-page-body))
+    (if (authenticated?)
+      (user-page-body)
+      (guess-page-body))
     (:messages request)))
 
 (defn- post [{post :params :as request}]

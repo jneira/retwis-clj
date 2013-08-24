@@ -20,8 +20,10 @@
 (defn add [type msg]
   (set (update-in (get) [type] conj msg)))
 
+(defn single [type str]
+  {type [{:content str}]})
+
 (defn from-validation [fields-with-msgs]
   {:error
    (flatten (for [[field msgs] fields-with-msgs]
-              (for [msg msgs]
-                {:content (str (name field) " " msg)})))})
+              (for [msg msgs] {:content msg})))})

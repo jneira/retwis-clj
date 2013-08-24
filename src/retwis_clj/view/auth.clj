@@ -5,8 +5,9 @@
             [stencil.core :as stencil]
             [retwis-clj.util.session :as session]
             [retwis-clj.view.common :refer
-             [wrap-context-root get-context-root wrap-layout translate]]
-            [retwis-clj.util.messages :as messages]
+             [wrap-context-root get-context-root
+              wrap-layout translate translate-error]]
+            [retwis-clj.util.messages :as msgs]
             [retwis-clj.model.user :as user]))
 
 (def labels [:username-label :password-label
@@ -29,10 +30,13 @@
 (defn- login [request]
   (let [{:keys [username password] :as user} (:params request)
         res (user/validate-login username password)]
-    (if (= res ::user/correct-password)
-      (do (session/set-user! (user/find-by-username username [:username]))
+    (if (= res ::user/valid-login)
+      (do (session/set-user!
+           (user/find-by-username username [:username]))
           (response/redirect (wrap-context-root "/")))
-      (login-page (assoc request :messages {:error [{:content res}]})))))
+      (let [msg (translate-error res)]
+        (login-page (assoc request :messages
+                           (msgs/single :error msg)))))))
 
 (defn- logout [request]
   (session/logout)
@@ -44,7 +48,8 @@
    (merge
     {:context-root (get-context-root)}
     (:params request)
-    (translate :auth (into labels [:signup-title :signup-submit])))))
+    (translate :auth (into labels [:signup-title
+                                   :signup-submit])))))
 
 (defn- signup-page [request]
   (wrap-layout "Sign up"
@@ -52,9 +57,9 @@
                (:messages request)))
 
 (defn- signup [{user :params :as request}]
-  (if-let [errors (seq (user/validate-new user))]
+  (if-let [errors (seq (user/validate-new user translate-error))]
     (-> request
-        (assoc :messages (messages/from-validation errors))
+        (assoc :messages (msgs/from-validation errors))
         (signup-page))
     (let [new-user (user/create user)]
       (session/set-user! new-user)

@@ -29,3 +29,5 @@
               (->Post nil content (:id user) now))]
     (user/add-post user post)
     (add-mentions post) post))
+
+(defn all [])

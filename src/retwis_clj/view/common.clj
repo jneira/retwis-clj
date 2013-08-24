@@ -18,10 +18,24 @@
 
 ;;; i18n utils
 
+(defn format-error-args [type [f s & more :as args]]
+  (case type
+    :length:within [(i18n/t :range (first f) (last f))]
+    :inclusion [(apply str (interpose \, f))]
+    args))
+
+(defn translate-error
+  ([type] (translate-error type []))
+  ([type args]
+     (let [args (format-error-args type args)]
+      (i18n/with-scope :msgs-error (apply i18n/t type args))))
+  ([type m attr & args]
+     (let [field (i18n/with-scope :fields (i18n/t attr))]
+       (translate-error type (cons field args)))))
+
 (defn translate
   ([keys] (zipmap keys (map i18n/t keys)))
   ([scope keys] (i18n/with-scope scope (translate keys))))
-
 
 ;;; User utils
 (defn restricted

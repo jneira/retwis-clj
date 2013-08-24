@@ -1,1 +1,14 @@
-<h1>Welcome guess</h1>
+<p>All tweets</p>
+<ul class="timline">
+{{#timeline}}
+{{#user}}    
+  <li><a href="{{root}}/user/{{username}}">
+    {{username}}
+  </a>:{{content}}
+  </li>
+{{/user}}
+{{/timeline}}
+{{^timeline}}
+  <li>Nobody has post a tweet. Do it you!</li>
+{{/timeline}}
+</ul>

@@ -28,24 +28,24 @@
         (find-by-username username [:salt :hashed-password])]
     (if user
       (if (= hashed-password (hash-pw salt password))
-        ::correct-password ::incorrect-password)
+        ::valid-login ::incorrect-password)
       ::user-not-found)))
 
-(defn constraints [{pw :password :as user}]
+(defn constraints [{pw :password :as user} msg-fn]
   (list*
-   (length-of :username :within (range 3 257))
-   (length-of :password :within (range 8 257))
-   (inclusion-of :password-check :in (set [pw]))
-   (map #(format-of :password :format %)
+   (length-of :username :within (range 3 8) :message-fn msg-fn)
+   (length-of :password :within (range 8 257) :message-fn msg-fn)
+   (inclusion-of :password-check :in (set [pw]) :message-fn msg-fn)
+   (map #(format-of :password :format % :message-fn msg-fn)
         [#"\d+" #"\W+" #"[A-Za-z]+"])))
 
-(defn validate [user]
-  ((apply validation-set (constraints user)) user))
+(defn validate [user msg-fn]
+  ((apply validation-set (constraints user msg-fn)) user))
 
-(defn validate-new [user]
+(defn validate-new [user msg-fn]
   (if (exists? (:username user))
-    {:username #{"already in use"}}
-    (validate user)))
+    {:username #{(msg-fn :username-in-use user :username)}}
+    (validate user msg-fn)))
 
 (defn create
   ([{:keys [username password]}]
@@ -77,6 +77,15 @@
                        {idy :id :as follower}]
   (db/remove (key-id idx :followers) idy)
    follower)
+
+(defn validate-follow [current follower followee]
+  (let [[curr fwer fwee]
+        (map :username [current follower followee])]
+    (cond (not (exists? fwer)) ::unknown-follower
+          (not (exists? fwee)) ::unknown-followee
+          (not= curr fwer) ::current-is-not-follower
+          (= fwer fwee) ::follower-is-followee
+          :else ::valid-follow)))
 
 (defn follow [{idx :id :as follower}
               {idy :id :as following}]
