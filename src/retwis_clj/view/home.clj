@@ -19,7 +19,7 @@
   (stencil/render-file
    "retwis_clj/view/templates/guess"
    {:root (get-context-root)
-    :timeline (post/all)}}))
+    :timeline (post/all)}))
 
 (defn- render-page [request]
   (wrap-layout "Home"
@@ -28,13 +28,13 @@
       (guess-page-body))
     (:messages request)))
 
-(defn- post [{post :params :as request}]
-  (if-let [errors (seq (post/validate post))]
+(defn- post [{ps :params :as request}]
+  (if-let [errors (seq (post/validate ps))]
     (do (-> request
             (assoc :messages (messages/from-validation errors))
             (render-page)))
     (let [user (session/current-user)]
-      (post/create user (:content post))
+      (post/create user (:content ps))
       (response/redirect (wrap-context-root "/")))))
 
 (defroutes home-routes

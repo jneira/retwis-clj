@@ -28,6 +28,10 @@
 (defn sublist [lst-key from to]
   (wcar (redis/lrange lst-key from to)))
 
+(defn paged-sublist [lst-key n page]
+  (let [from (* (dec page) 10) to (dec (* page 10))]
+    (sublist lst-key from to)))
+
 (defn add [set-key val]
   (wcar (redis/sadd set-key val)))
 

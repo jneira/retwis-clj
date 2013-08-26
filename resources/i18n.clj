@@ -7,6 +7,14 @@
              :login-submit "login"
              :signup-link "Register"
              :recover-password-link "Recover password"}
+      :profile {:follow-submit "follow"
+                :unfollow-submit "unfollow"
+                :tweets-title "Tweets"
+                :no-tweets-msg "No tweets yet."
+                :followers-title "Followers"
+                :no-followers-msg  "No followers yet."
+                :followees-title "Followees"
+                :no-followees-msg "No followees yet."}
       :msgs-info {:following "You are following {0}"}
       :msgs-error {:blank "{0} can't be blank"
                    :length:within "{0} must be from {1} characters"
@@ -38,6 +46,14 @@
              :signup-submit "registrar"
              :signup-link "Nuevo usuario"
              :recover-password-link "Recuperar contraseña"}
+      :profile {:follow-submit "seguir"
+                :unfollow-submit "no seguir"
+                :tweets-title "Tweets"
+                :no-tweets-msg "Ningun tweet todavia."
+                :followers-title "Seguidores"
+                :no-followers-msg  "Ningun seguidor todavia."
+                :followees-title "Seguidos"
+                :no-followees-msg "Ningun seguido todavia."}
       :msgs-info {:following "Estas siguiendo a {0}"}
       :msgs-error {:blank "{0} debe estar informado/a"
                    :length:within "{0} debe tener de {1} caracteres"

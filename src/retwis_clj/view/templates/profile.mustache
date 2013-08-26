@@ -2,35 +2,36 @@
 <h3>{{other}}</h3>
 {{#current}}
   <form action="{{context-root}}/user/{{username}}/followee/{{other}}"
-   type="put" >
-   <input type="submit" value="follow" />
+   type="{{other-user-method}}" >
+   <input type="hidden" name="_method" value="{{other-user-method}}" />
+   <input type="submit" value="{{other-user-submit}}" />
   </form>
 {{/current}}
 {{/self}}
-<p>Posts</p>
+<p>{{tweets-title}}</p>
 <ul class="posts">
 {{#posts}}
-  <li>{{content}} </li>
+  <li>{{content}}</li>
 {{/posts}}
 {{^posts}}
-  <li>No tweets yet.</li>
+  <li>{{no-tweets-msg}}</li>
 {{/posts}}
 </ul>
-<p>Followers</p>
+<p>{{followers-title}}</p>
 <ul class="users followers">
 {{#followers}}
-  <li>{{username}} </li>
+  <li><a href="{{context-root}}/user/{{username}}">{{username}}</a></li>  
 {{/followers}}
 {{^followers}}
-  <li>No followers yet.</li>
+  <li>{{no-followers-msg}}</li>
 {{/followers}}
 </ul>
-<p>Followees</p>
+<p>{{followees-title}}</p>
 <ul class="users followees">
 {{#followees}}
-  <li>{{username}} </li>
+  <li><a href="{{context-root}}/user/{{username}}">{{username}}</a></li>
 {{/followees}}
 {{^followees}}
-  <li>No followees yet.</li>
+  <li>{{no-followees-msg}}</li>
 {{/followees}}
 </ul>

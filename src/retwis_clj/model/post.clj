@@ -27,7 +27,13 @@
   (let [now (System/currentTimeMillis)
         post (db/create
               (->Post nil content (:id user) now))]
+    (db/cons (:id post) (key :all))
     (user/add-post user post)
-    (add-mentions post) post))
+    (add-mentions post)
+    post))
 
-(defn all [])
+(defn all
+  ([] (all 1))
+  ([page]
+     (let [ids (db/paged-sublist (key :all) 10 page)]
+       (map user/tweet-by-id ids))))

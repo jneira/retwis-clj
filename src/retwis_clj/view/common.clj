@@ -33,9 +33,12 @@
      (let [field (i18n/with-scope :fields (i18n/t attr))]
        (translate-error type (cons field args)))))
 
-(defn translate
+(defn translate [scope key]
+  (i18n/with-scope scope (i18n/t key)))
+
+(defn translate-keys
   ([keys] (zipmap keys (map i18n/t keys)))
-  ([scope keys] (i18n/with-scope scope (translate keys))))
+  ([scope keys] (i18n/with-scope scope (translate-keys keys))))
 
 ;;; User utils
 (defn restricted

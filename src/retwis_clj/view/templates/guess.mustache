@@ -1,5 +1,5 @@
 <p>All tweets</p>
-<ul class="timline">
+<ul class="timeline">
 {{#timeline}}
 {{#user}}    
   <li><a href="{{root}}/user/{{username}}">
@@ -9,6 +9,6 @@
 {{/user}}
 {{/timeline}}
 {{^timeline}}
-  <li>Nobody has post a tweet. Do it you!</li>
+  <li>Nobody has post a tweet. Do it!</li>
 {{/timeline}}
 </ul>

@@ -55,14 +55,16 @@
            user (db/create (->User nil name pwd salt))]
        (db/add-to-index user :username) user)))
 
+(defn tweet-by-id [tweet-id]
+  (let [t (db/read (id->Post tweet-id))
+        u (find-by-id (:user-id t) [:username])]
+    (assoc t :user u)))
+
 (defn tweets
   ([type user] (tweets type user 1))
   ([type {id :id} page]
-     (let [from (* (dec page) 10) to (dec (* page 10))]
-       (map #(let [t (db/read (id->Post %))
-                   u (find-by-id (:user-id t) [:username])]
-               (assoc t :user u))
-            (db/sublist (key-id id type) from to)))))
+     (let [ids (db/paged-sublist (key-id id type) 10 page)]
+       (map tweet-by-id ids))))
 
 (def posts (partial tweets :posts))
 (def timeline (partial tweets :timeline))
@@ -85,7 +87,7 @@
           (not (exists? fwee)) ::unknown-followee
           (not= curr fwer) ::current-is-not-follower
           (= fwer fwee) ::follower-is-followee
-          :else ::valid-follow)))
+          :else ::valid)))
 
 (defn follow [{idx :id :as follower}
               {idy :id :as following}]

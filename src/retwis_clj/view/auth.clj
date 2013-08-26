@@ -6,7 +6,7 @@
             [retwis-clj.util.session :as session]
             [retwis-clj.view.common :refer
              [wrap-context-root get-context-root
-              wrap-layout translate translate-error]]
+              wrap-layout translate-keys translate-error]]
             [retwis-clj.util.messages :as msgs]
             [retwis-clj.model.user :as user]))
 
@@ -19,8 +19,9 @@
    (merge
     {:context-root (get-context-root)}
     (:params request)
-    (translate :auth (into labels [:remember-me :login-submit
-                                   :signup-link :recover-password-link])))))
+    (translate-keys :auth
+                    (into labels [:remember-me :login-submit
+                                  :signup-link :recover-password-link])))))
 
 (defn- login-page [request]
   (wrap-layout "Log in"
@@ -48,8 +49,8 @@
    (merge
     {:context-root (get-context-root)}
     (:params request)
-    (translate :auth (into labels [:signup-title
-                                   :signup-submit])))))
+    (translate-keys :auth (into labels [:signup-title
+                                        :signup-submit])))))
 
 (defn- signup-page [request]
   (wrap-layout "Sign up"

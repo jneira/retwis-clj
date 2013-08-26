@@ -1,24 +1,34 @@
 (ns retwis-clj.view.profile
-  (:require [compojure.core :refer [defroutes GET PUT]]
+  (:require [compojure.core :refer [defroutes GET PUT DELETE ANY]]
             [stencil.core :as stencil]
             [retwis-clj.util.session :as session]
             [retwis-clj.util.messages :as msgs]
             [retwis-clj.view.common :refer
              [restricted authenticated? wrap-layout
-              translate translate-error]]
+              translate translate-keys translate-error]]
             [retwis-clj.model.user :as user]))
+
+(def trans (partial translate :profile))
 
 (defn- profile-body [{{name :username} :params}]
   (stencil/render-file
    "retwis_clj/view/templates/profile"
    (let [current (session/current-user)
-         user (user/find-by-username name)]
-     {:posts (user/posts user)
-      :followers (user/followers user)
-      :followees (user/followees user)
-      :self (= name (:username current))
-      :other name
-      :current current})))
+         user (user/find-by-username name)
+         fwee? (user/following? current user)]
+     (merge
+      {:posts (user/posts user)
+       :followers (user/followers user)
+       :followees (user/followees user)
+       :self (= name (:username current))
+       :other name :current current
+       :other-user-method (if fwee? "delete" "put")
+       :other-user-submit (trans (if fwee? :unfollow-submit
+                                           :follow-submit))}
+      (translate-keys :profile
+       [:tweets-title :no-tweets-msg
+        :followers-title :no-followers-msg
+        :followees-title :no-followees-msg])))))
 
 (defn- connect-body []
   (stencil/render-file
@@ -34,21 +44,27 @@
   (wrap-layout "Connect" (connect-body)
                (:messages request)))
 
-(defn- follow [{{:keys [username followee]} :params :as req}]
+(defn- follow-or-unfollow-by-method [follower followee method]
+  (case (.toUpperCase method)
+    "PUT" (user/follow follower followee)
+    "DELETE" (user/unfollow follower followee)))
+
+(defn- follow-or-unfollow [{{:keys [username followee _method]}
+                            :params :as req}]
   (let [curr (session/current-user)
         [follower fwee] (map #(user/find-by-username % [:username])
                              [username followee])
-        res (user/validate-follow curr follower fwee)]
-    (println res)
-    (if (= res ::user/valid-follow)
-      (do (user/follow follower fwee)
+        res (user/validate-follow curr follower fwee)
+        method (or _method (name (:request-method req)))]
+    (if (= res ::user/valid)
+      (do (follow-or-unfollow-by-method follower fwee method)
           (profile-page req))
       (let [msgs (msgs/single :error (translate-error res))]
-        (profile-page (assoc req :messages msgs))))))
+          (profile-page (assoc req :messages msgs))))))
 
 (defroutes profile-routes
-  (GET "/user/:username/followee/:followee" request
-       (follow request))
+  (ANY "/user/:username/followee/:followee" request
+        (follow-or-unfollow request))
   (GET "/user/:username" request
        (profile-page request))
   (GET "/connect" request
