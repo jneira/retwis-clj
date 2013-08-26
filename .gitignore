@@ -1,7 +1,7 @@
 pom.xml
 *jar
-/lib/
-/classes/
-/target/
-.lein-deps-sum
+/lib
+/classes
+/target
+.lein-*
 dump.rdb

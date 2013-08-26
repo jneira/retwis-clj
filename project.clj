@@ -11,7 +11,10 @@
                  [com.taoensso/tower "1.7.1"]
                  [digest "1.3.0"]
                  [com.novemberain/validateur "1.5.0"]]
-  :plugins [[lein-ring "0.8.3"]]
+  :plugins [[lein-ring "0.8.3"]
+            [lein-cloudbees "1.0.4"]]
   :ring {:handler retwis-clj.app/site-handler}
   :war-resources-path "resources/public"
-  :main retwis-clj.server)
+  :main retwis-clj.server
+  :uberjar-name "retwis-clj-standalone.jar"
+  :min-lein-version "2.0.0")

@@ -1,0 +1,1 @@
+web: java $JVM_OPTS -cp target/retwis-clj-standalone.jar clojure.main -m retwis-clj.server $PORT
