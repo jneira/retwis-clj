@@ -4,7 +4,7 @@
   (:require [taoensso.carmine :as redis]
             [retwis-clj.model.db-config :as cfg]))
 
-(def server1-conn {:pool {} :spec (or cfg/redis {})})
+(def server1-conn {:pool {:maxActive 5} :spec (or cfg/redis {})})
 
 (defmacro wcar [& body]
   `(redis/wcar server1-conn ~@body))
