@@ -29,10 +29,9 @@
   ([type m attr & args]
      (let [field (i18n/with-scope :fields (i18n/t attr))
            args (format-error-args type args)
-           type+attr (keyword (str (name type) "/" (name attr)))]
-       (println type+attr)
+           attr+type (keyword (str (name attr) "/" (name type)))]
        (i18n/with-scope :msgs-error
-         (apply i18n/t [type+attr type] field args)))))0
+         (apply i18n/t [attr+type type] field args)))))
 
 (defn translate [scope key]
   (i18n/with-scope scope (i18n/t key)))
