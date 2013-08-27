@@ -25,13 +25,14 @@
     args))
 
 (defn translate-error
-  ([type] (translate-error type []))
-  ([type [field & args :as all]]
-     (let [args (format-error-args type args)]
-      (i18n/with-scope :msgs-error (apply i18n/t type field args))))
+  ([type] (translate-error type {} []))
   ([type m attr & args]
-     (let [field (i18n/with-scope :fields (i18n/t attr))]
-       (translate-error type (cons field args)))))
+     (let [field (i18n/with-scope :fields (i18n/t attr))
+           args (format-error-args type args)
+           type+attr (keyword (str (name type) "/" (name attr)))]
+       (println type+attr)
+       (i18n/with-scope :msgs-error
+         (apply i18n/t [type+attr type] field args)))))0
 
 (defn translate [scope key]
   (i18n/with-scope scope (i18n/t key)))

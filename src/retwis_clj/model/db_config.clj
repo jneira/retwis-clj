@@ -1,4 +1,5 @@
 (ns retwis-clj.model.db-config)
 
-(def redis {:uri (System/getenv "REDISCLOUD_URL")})
+(def redis
+  (when-let [uri (System/getenv "REDISCLOUD_URL")] {:uri uri}))
 

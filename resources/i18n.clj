@@ -20,6 +20,7 @@
       :msgs-error {:blank "{0} can't be blank"
                    :length:within "{0} must be from {1} characters"
                    :format "{0} has incorrect format"
+                   :password {:format "Password must contain at least one number, one letter and one symbol"}
                    :inclusion "{0} must be one of {1}"
                    :username-in-use "{0} already in use"
                    :retwis-clj
@@ -61,6 +62,7 @@
                    :format "{0} tiene un formato incorrecto"
                    :inclusion "{0} debe ser uno de {1}"
                    :username-in-use "{0} ya existe"
+                   :password {:format "La contraseña debe contener al menos un numero, una letra y un simbolo"}
                    :retwis-clj
                    {:model
                     {:user {:user-not-found "Usuario desconocido"

@@ -1,6 +1,7 @@
 # retwis-clj
 
-FIXME
+This project follow the convention of other example apps to test and
+play with the redis no-sql datastore
 
 ## Usage
 Launch the application by issuing one of the following commands:

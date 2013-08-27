@@ -7,7 +7,7 @@
                  [ring "1.2.0"]
                  [compojure "1.1.5"]
                  [stencil "0.3.2"]
-                 [com.taoensso/carmine "2.0.0-RC1"]
+                 [com.taoensso/carmine "2.2.0"]
                  [com.taoensso/tower "1.7.1"]
                  [digest "1.4.3"]
                  [com.novemberain/validateur "1.5.0"]]
