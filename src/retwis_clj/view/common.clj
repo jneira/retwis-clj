@@ -26,9 +26,9 @@
 
 (defn translate-error
   ([type] (translate-error type []))
-  ([type args]
+  ([type [field & args :as all]]
      (let [args (format-error-args type args)]
-      (i18n/with-scope :msgs-error (apply i18n/t type args))))
+      (i18n/with-scope :msgs-error (apply i18n/t type field args))))
   ([type m attr & args]
      (let [field (i18n/with-scope :fields (i18n/t attr))]
        (translate-error type (cons field args)))))
