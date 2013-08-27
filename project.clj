@@ -12,6 +12,7 @@
                  [digest "1.4.3"]
                  [com.novemberain/validateur "1.5.0"]]
   :plugins [[lein-ring "0.8.3"]]
+  :profiles {:uberjar {:aot :all}}
   :ring {:handler retwis-clj.app/site-handler}
   :war-resources-path "resources/public"
   :main retwis-clj.server

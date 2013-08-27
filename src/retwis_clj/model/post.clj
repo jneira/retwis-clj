@@ -1,5 +1,5 @@
 (ns retwis-clj.model.post
-  (:refer-clojure exclude [key])
+  (:refer-clojure :exclude [key])
   (:use retwis-clj.model.entities
         validateur.validation)
   (:require [retwis-clj.model.user :as user]
