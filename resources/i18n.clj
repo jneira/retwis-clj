@@ -5,6 +5,7 @@
              :password-check-label "Repeat password"
              :remember-me "Remember me"
              :login-submit "login"
+             :signup-submit "signup"
              :signup-link "Register"
              :recover-password-link "Recover password"}
       :profile {:follow-submit "follow"
