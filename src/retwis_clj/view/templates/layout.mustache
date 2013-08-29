@@ -19,7 +19,7 @@
 	  <a class="brand">{{app-name}}</a>
 	  <div class="nav-collapse collapse">
 	    <ol class="nav">
-	      <li><a href="{{context-root}}/">Home</a></li>
+	      <li><a href="{{context-root}}/">{{home-link}}</a></li>
 	      {{#authenticated?}}
 	      {{#nav-links}}
 	      <li><a href="{{link}}">{{label}}</a></li>
@@ -27,7 +27,7 @@
 	      {{/authenticated?}}
 	    </ol>
 	    {{#not-authenticated?}}
-	    <a class="btn btn-inverse pull-right" href="{{context-root}}/login">Log in</a>
+	    <a class="btn btn-inverse pull-right" href="{{context-root}}/login">{{login-link}}</a>
 	    {{/not-authenticated?}}
 	    {{#authenticated?}}
 	    <div class="pull-right right-menu">
@@ -38,25 +38,42 @@
 		  <span class="caret"></span>
 		</a>
 		<ul class="dropdown-menu">
-		  <li><a href="{{context-root}}/profile">Profile</a></li>
-		  <li><a href="{{context-root}}/logout">Logout</a></li>
+		  <li><a href="{{context-root}}/profile">{{profile-link}}</a></li>
+		  <li><a href="{{context-root}}/logout">{{logout-link}}</a></li>
 		</ul>
 	      </span>
 	    </div>
 	    {{/authenticated?}}
 	  </div>
-	</div>
+        </div>
       </div>
     </div>
+    <center><img src="/img/test/construction.gif" /></center>
     <div class="messages">
       {{> retwis_clj/view/templates/messages}}
     </div>
     <div class="container" id="content">
       {{{body}}}
     </div>
-    <script src="/js/jquery.min.js" type="text/javascript"></script>
-    <script src="/js/jquery.ui.core.min.js" type="text/javascript"></script>
-    <script src="/js/jquery.ui.datepicker.min.js" type="text/javascript"></script>
-    <script src="/js/bootstrap.min.js" type="text/javascript"></script>
+    <br/><br/><br/>
+    <footer class="footer">
+      <p style="margin-top: -14px" class="pull-left">
+        <img src="/img/test/geocities.jpg">
+        <img src="/img/test/ie_logo.gif" />
+        <img src="/img/test/ns_logo.gif" />
+      </p>
+      <p style="margin-top: -14px"
+      class="pull-right"><img src="/img/test/hacker.gif">&nbsp; Using
+        <a href="http://code.divshot.com/geo-bootstrap/">geo-bootrap</a>,
+        <a href="http:/clojure.org/">clojure</a>,<a href="http://redis.io">redis</a>, <a href="https://github.com/jneira/retwis-clj">source
+        at github</a>
+</p>
+    </footer>
+    <center><img src="/img/test/counter2.gif"></center>
+   <script src="/js/jquery.min.js" type="text/javascript"></script>
+   <script src="/js/jquery.ui.core.min.js" type="text/javascript"></script>
+   <script src="/js/jquery.ui.datepicker.min.js" type="text/javascript"></script>
+   <script src="/js/bootstrap.min.js" type="text/javascript"></script>
+   
   </body>
 </html>

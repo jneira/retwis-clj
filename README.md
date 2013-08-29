@@ -43,7 +43,7 @@ is translate-error:
 ```
 The function search in a dictionary (a clojure map) the
 field translated and pass it with other args to the message retrieved
-by the attribute and type and secondary by type:
+by attributed and type of validation and secondary only by type:
 ```clojure
 {:en  ...
       :msgs-error {
@@ -68,8 +68,12 @@ retwis-clj.view.common> (translate-error :format {:username "invalid"} :username
 retwis-clj.view.common> (translate-error :format {:password "invalid"} :password #"pattern")
 "Password must contain at least one number, one letter and one symbol"
 ```
-For details of usage with validateur read its relevant doc strings and
+For details of that function usage with validateur read its relevant doc strings and
   [changelog](https://github.com/michaelklishin/validateur/blob/master/ChangeLog.md#optional-function-callback-to-parametrize-the-construction-of-messages).
+
+The i18n boilerplate could be hidden in the layout or as a ring
+middleware. I don't know if it exists already. Same for validate form input.
+
 ## Live instance
 The app is deployed in heroku: http://retwis-clj.herokuapp.com 
 

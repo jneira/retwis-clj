@@ -1,9 +1,9 @@
-<p> Tweet </p>
+<p>{{tweet-header}} </p>
 <form action="post" name="post" method="post">
   <textarea name="content" rows="3" style="width:30em"></textarea>
-  <input type="submit" value="send"/>
+  <input class="btn" type="submit" value="{{send-submit}}"/>
 </form>
-<p> Timeline </p>
+<p>{{tweets-header}} </p>
 <ul class="timeline">
 {{#timeline}}
 {{#user}}    
@@ -14,6 +14,6 @@
 {{/user}}
 {{/timeline}}
 {{^timeline}}
-  <li>No tweets, post some of them</li>
+  <li>{{no-tweets-msg}}</li>
 {{/timeline}}
 </ul>

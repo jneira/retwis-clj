@@ -8,21 +8,26 @@
             [retwis-clj.util.session :as session]
             [retwis-clj.util.messages :as messages]))
 
+(def labels [:tweets-header :no-tweets-msg])
+
 (defn- user-page-body []
   (let [user (session/current-user)]
     (stencil/render-file
      "retwis_clj/view/templates/home"
-     {:root (get-context-root)
-      :timeline (user/timeline user)})))
+     (merge {:root (get-context-root)
+             :timeline (user/timeline user)}
+            (translate-keys :home (conj labels :send-submit))))))
 
 (defn- guess-page-body []
   (stencil/render-file
    "retwis_clj/view/templates/guess"
-   {:root (get-context-root)
-    :timeline (post/all)}))
+   (merge {:root (get-context-root)
+           :timeline (post/all)}
+          (translate-keys :guess labels))))
 
 (defn- render-page [request]
-  (wrap-layout "Home"
+  (wrap-layout (translate (if authenticated? :home :guess)
+                          :title)
     (if (authenticated?)
       (user-page-body)
       (guess-page-body))

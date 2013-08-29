@@ -1,4 +1,18 @@
-{:en {:auth {:login-title "Please, log in"
+{:en {:layout {:home-link "Home"
+               :login-link "Log in"
+               :profile-link "Settings"
+               :logout-link "Logout"
+               :user-link "Me"
+               :connect-link "Connect"}
+      :home {:title "Home"
+             :tweet-header "Tweet"
+             :tweets-header "Tweets"
+             :no-tweets-msg "No tweets, post some of them"
+             :send-submit "Send"}
+      :guess {:title "Inicio"
+              :tweets-header "All tweets"
+              :no-tweets-msg "Nobody has post a tweet. Do it!"}
+      :auth {:login-title "Please, log in"
              :signup-title "Sign up for retwis"
              :username-label "Username or Email"
              :password-label "Password"
@@ -38,7 +52,21 @@
                :username "User name"}
       :range "{0} to {1}"
       :missing "<Missing translation: {0}>"}
- :es {:auth {:login-title "Por favor, identifíquese"
+ :es {:layout {:home-link "Inicio"
+               :login-link "Acceder"
+               :profile-link "Configuracion"
+               :logout-link "Salir"
+               :user-link "Cuenta"
+               :connect-link "Conecta"}
+      :home {:title "Inicio"
+             :tweet-header "Tweet"
+             :tweets-header "Tweets"
+             :no-tweets-msg "No has escrito Ningun tweet todavia."
+             :send-submit "Enviar"}
+      :guess {:title "Inicio"
+              :tweets-header "Todos los tweets"
+              :no-tweets-msg "Nadie ha escrito ningun tweet.¡Se el primero!"}
+      :auth {:login-title "Por favor, identifíquese"
              :signup-title "Registrar nuevo usuario"
              :username-label "Nombre de usuario o email"
              :password-label "Contraseña"

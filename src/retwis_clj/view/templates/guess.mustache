@@ -1,4 +1,4 @@
-<p>All tweets</p>
+<p>{{tweets-header}}</p>
 <ul class="timeline">
 {{#timeline}}
 {{#user}}    
@@ -9,6 +9,6 @@
 {{/user}}
 {{/timeline}}
 {{^timeline}}
-  <li>Nobody has post a tweet. Do it!</li>
+  <li>{{no-tweets-msg}}</li>
 {{/timeline}}
 </ul>

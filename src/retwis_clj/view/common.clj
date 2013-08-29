@@ -64,14 +64,19 @@
 ;;; Layout
 (defn- base-content
   ([title body]
-     {:context-root (context/get-context-root)
-      :title title :body body})
+     (merge
+      {:context-root (context/get-context-root)
+       :title title :body body}
+      (translate-keys :layout [:home-link :login-link
+                               :profile-link :logout-link])))
   ([title body msgs]
      (assoc (base-content title body) :messages msgs)))
 
 (defn- user-nav-links [{un :username}]
-  [{:link (wrap-context-root (str "/user/" un)) :label "Me"}
-   {:link (wrap-context-root "/connect") :label "Connect"}])
+  [{:link (wrap-context-root (str "/user/" un))
+    :label (i18n/t :layout/user-link)}
+   {:link (wrap-context-root "/connect")
+    :label (i18n/t :layout/connect-link)}])
 
 (defn wrap-layout
   "Define pages layout"

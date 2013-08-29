@@ -1,6 +1,6 @@
 <div class="form-horizontal login-form">
   <h2>{{login-title}}</h2>
-  <form method="post" action="{{context-root}}/login">
+  <form method="post" action="{{context-root}}/login" class="well">
     <div class="control-group">
       <input type="text" name="username" value="{{username}}" 
              placeholder="{{username-label}}" 
@@ -20,7 +20,7 @@
     </div>
     <div class="control-group">
       <input type="submit" value="{{login-submit}}" 
-             class="btn btn-inverse btn-large pull-right">
+             class="btn btn-primary btn-inverse pull-right">
     </div>
     <div class="links">
       <span><a href="/signup" >{{signup-link}}</a> - 
